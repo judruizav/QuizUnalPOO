@@ -26,6 +26,16 @@ public class Carro extends JPanel implements ActionListener, KeyListener{
        this.y= y;
        this.puntaje=puntaje;
     }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+    
+    
     
     @Override
     protected void paintComponent(Graphics g){

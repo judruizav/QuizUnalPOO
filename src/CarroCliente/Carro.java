@@ -10,6 +10,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author Estudiante
@@ -19,7 +24,7 @@ public class Carro extends JPanel implements ActionListener, KeyListener{
     private int x=0;
     private int y=0;
     private int puntaje;
-    
+            
     public Carro(int x, int y, int puntaje){
         this.x= x;
         this.y= y;
@@ -66,7 +71,11 @@ public class Carro extends JPanel implements ActionListener, KeyListener{
             case KeyEvent.VK_LEFT: x -= 30; break;
             case KeyEvent.VK_RIGHT: x += 30; break;
         }
-        repaint();
+        try {
+            Server(x,y);
+        } catch (IOException ex) {
+            System.out.println(ex.getLocalizedMessage());
+        }
     }
 
     @Override
@@ -82,7 +91,17 @@ public class Carro extends JPanel implements ActionListener, KeyListener{
         return new Rectangle(10+x, 30+y, 150, 120);    
     }
     
-    public void Server(int x, int y){
-        
+    public void Server(int x, int y) throws IOException{
+      try{
+        Socket socket= new Socket("localhost",8000);
+        DataOutputStream xServer= new DataOutputStream(socket.getOutputStream());
+        DataOutputStream yServer= new DataOutputStream(socket.getOutputStream());
+        xServer.write(x);
+        xServer.flush();
+        yServer.write(y);
+        yServer.flush();
+      }catch(IOException ex){
+        System.out.println(ex.getLocalizedMessage());
+      }
     }
 }

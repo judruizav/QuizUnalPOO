@@ -13,7 +13,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -84,13 +87,17 @@ public class Tablero extends JPanel implements ActionListener, KeyListener{
       }
     }
     
-    void server() throws IOException{
+    public void server() throws IOException{
       try{
         ServerSocket serverSocket= new ServerSocket(8000);
-        Socket socket= serverSocket.accept();
-          
+        while(true){
+          Socket socket= serverSocket.accept();
+          InetAddress socketAddress= socket.getInetAddress();
+          Handlepos handlepos= new Handlepos(socket, serverSocket, this.carro1);
+          new Thread(handlepos).start();
+        }
       }catch(IOException ex){
-          System.out.println(ex.getMessage());
+          System.out.println(ex.getLocalizedMessage());
       }      
     }
 }
