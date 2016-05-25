@@ -17,14 +17,12 @@ import java.util.logging.Logger;
  * @author Julian
  */
 public class Handlepos implements Runnable{
-    private Socket socket;
     private int x;
     private int y;
     private ServerSocket serverSocket;
     private Carro carro;
 
-    public Handlepos(Socket socket, ServerSocket serverSocket, Carro carro) {
-        this.socket = socket;
+    public Handlepos( ServerSocket serverSocket, Carro carro) {
         this.serverSocket = serverSocket;
         this.carro = carro;
     }
@@ -32,13 +30,15 @@ public class Handlepos implements Runnable{
     @Override
     public void run() {
         try {
-            this.socket=this.serverSocket.accept();
-            DataInputStream is= new DataInputStream(this.socket.getInputStream());
+            Socket socket=this.serverSocket.accept();
+            DataInputStream is= new DataInputStream(socket.getInputStream());
             while(true){
+              System.out.println(this.carro.getX());
+              System.out.println(getX());
               this.x= is.readInt();
               this.y= is.readInt();
-              this.carro.setX(this.x);
-              this.carro.setY(this.y);
+              this.carro.setX(is.readInt());
+              this.carro.setY(is.readInt());
             }
         } catch (IOException ex) {
           System.out.println(ex.getLocalizedMessage());
@@ -46,5 +46,14 @@ public class Handlepos implements Runnable{
         
         
     }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+    
     
 }

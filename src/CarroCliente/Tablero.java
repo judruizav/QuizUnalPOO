@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class Tablero extends JPanel implements ActionListener, KeyListener{
     private Timer timer;
     private Carro carro1;
+    private Carro carro2;
     private ArrayList<Moneda> coin;
     private int puntajeCarro1=0;
     public Tablero(){

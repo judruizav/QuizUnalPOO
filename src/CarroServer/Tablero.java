@@ -16,6 +16,9 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,14 +27,23 @@ import java.util.ArrayList;
 
 public class Tablero extends JPanel implements ActionListener, KeyListener{
     private Timer timer;
+    private ServerSocket serverSocket;
     private Carro carro1;
+    private Carro carro2;
     private ArrayList<Moneda> coin;
     private int puntajeCarro1=0;
+    private int puntajeCarro2=0;
     
     public Tablero(){
         this.setFocusable(true);
+        try {
+            serverSocket= new ServerSocket(8000);
+        } catch (IOException ex) {
+            Logger.getLogger(Tablero.class.getName()).log(Level.SEVERE, null, ex);
+        }
         this.addKeyListener(this);
         this.carro1= new Carro(50,50,puntajeCarro1);
+        this.carro2= new Carro(1050,50,puntajeCarro2);
         this.coin= new ArrayList<Moneda>();
         this.coin.add(new Moneda(450,150));
         this.coin.add(new Moneda(500,150));
@@ -74,7 +86,9 @@ public class Tablero extends JPanel implements ActionListener, KeyListener{
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         g.setFont(new Font("TimesNewRoman", Font.BOLD, 24));
-        g.drawString("Puntaje jugador 1" + puntajeCarro1, 0, 20);
+        g.drawString("Puntaje jugador 1= " + puntajeCarro1, 0, 20);
+        g.drawString("Puntaje jugador 2= " + puntajeCarro2, 0, 40);
+        this.carro2.paintComponent(g);
         this.carro1.paintComponent(g);
         for(int i=0; i<this.coin.size(); i++){
             this.coin.get(i).paintComponent(g, this);    
@@ -83,15 +97,17 @@ public class Tablero extends JPanel implements ActionListener, KeyListener{
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        this.carro1.actionPerformed(e);
         validarColisiones();
+        Thread moverCarro1= new Thread(new Handlepos(this.serverSocket, this.carro1));
+        //Thread moverCarro2= new Thread(new Handlepos(this.serverSocket, this.carro2));
+        moverCarro1.start();
+        //moverCarro2.start(); 
         repaint();
     }
     
     @Override
     public void keyPressed(KeyEvent e) {
         this.carro1.keyPressed(e);
-        repaint();
     }
     
     @Override
@@ -116,18 +132,6 @@ public class Tablero extends JPanel implements ActionListener, KeyListener{
     }
     
 
-    public void server() throws IOException{
-      try{
-        ServerSocket serverSocket= new ServerSocket(8000);
-        while(true){
-          Socket socket= serverSocket.accept();
-          InetAddress socketAddress= socket.getInetAddress();
-          Handlepos handlepos= new Handlepos(socket, serverSocket, this.carro1);
-          new Thread(handlepos).start();
-        }
-      }catch(IOException ex){
-          System.out.println(ex.getLocalizedMessage());
-      }
-    }      
+     
 
 }

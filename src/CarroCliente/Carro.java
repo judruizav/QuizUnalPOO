@@ -88,7 +88,9 @@ public class Carro extends JPanel implements ActionListener, KeyListener{
     }
     
     public void Server(int x, int y) throws IOException{
-      try{
+      System.out.println(x);
+      System.out.println(y);
+        try{
         Socket socket= new Socket("localhost",8000);
         DataOutputStream xServer= new DataOutputStream(socket.getOutputStream());
         DataOutputStream yServer= new DataOutputStream(socket.getOutputStream());
